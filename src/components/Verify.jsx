@@ -2,7 +2,7 @@ import React from 'react';
 
 const Verify = () => {
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-900 relative text-indigo-400">
+    <div className="flex justify-center items-center h-screen bg-[#141414] relative text-indigo-400">
       <img
         src="./src/assets/logo.png"
         alt="College Cupid Logo"

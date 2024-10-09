@@ -9,7 +9,7 @@ function Body() {
   const navigate = useNavigate();
 
   function acceptMessage() {
-    navigate("/accepted");
+    navigate("/foryou/accepted");
   }
 
   function rejectMessage() {
@@ -19,15 +19,15 @@ function Body() {
   return (
     <>
       <Header />
-      <div className="bg-gray-800 text-indigo-400 p-[6.95rem]">
+      <div className="p-[6.95rem]">
         <div className="flex">
-          <div className="block w-full max-w-md mx-auto bg-slate-200 shadow-lg rounded-lg overflow-hidden">
+          <div className="block w-full max-w-md mx-auto bg-gray-800 shadow-lg rounded-lg overflow-hidden">
             <img
               className="rounded-t-lg"
               src="https://tecdn.b-cdn.net/img/new/standard/nature/184.jpg"
               alt="image"
             />
-            <div className="p-6 text-surface text-indigo-400">
+            <div className="p-6 text-surface">
               <h5 className="mb-2 text-xl font-medium leading-tight text-center">
                 Person1
               </h5>
@@ -36,25 +36,27 @@ function Body() {
                 the bulk of the card's content. (Profile Description)
               </p>
               <div className="flex justify-center">
+                <a href="/profile">
                 <button
                   type="button"
-                  className="inline-block rounded bg-slate-700 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong justify-center"
+                  className="inline-block rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong justify-center bg-gray-600"
                   data-twe-ripple-init
                   data-twe-ripple-color="light"
                 >
                   Edit
                 </button>
+                </a>
               </div>
             </div>
           </div>
           {message ? (
-            <div className="block w-full max-w-md mx-auto bg-slate-200 shadow-lg rounded-lg overflow-hidden">
+            <div className="block w-full max-w-md mx-auto bg-gray-800 shadow-lg rounded-lg overflow-hidden">
               <img
                 className="rounded-t-lg"
                 src="https://tecdn.b-cdn.net/img/new/standard/nature/184.jpg"
                 alt="image"
               />
-              <div className="p-6 text-surface text-indigo-400">
+              <div className="p-6 text-surface">
                 <h5 className="mb-2 text-xl font-medium leading-tight text-center">
                   Your Potential Mate
                 </h5>

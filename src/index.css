@@ -4,4 +4,16 @@
 
 body{
   font-family: monospace, sans-serif, Arial;
+  color: #8789FE;
+  background-color: #141414;
+}
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
 }

@@ -2,25 +2,25 @@ import React from 'react';
 
 const CollegeCupid = () => {
   return (
-    <div className="flex flex-col items-center bg-gray-900 text-indigo-300">
+    <div className="flex flex-col items-center">
       <img src="./src/assets/logo.png" alt="College Cupid Logo" className="w-64 mt-12" />
       <h1 className="text-5xl mt-8 mb-10">Welcome to College Cupid</h1>
       <div className="flex justify-center gap-10 mb-16">
         <a
           href="/signup"
-          className="bg-indigo-300 text-black px-8 py-4 rounded-lg font-bold text-xl border-2 border-indigo-300 transition-transform duration-300 transform hover:bg-indigo-500 hover:scale-105 hover:shadow-lg"
+          className="bg-[#8789FE] text-black px-8 py-4 rounded-lg font-bold text-xl border-2 border-indigo-300 transition-transform duration-300 transform hover:bg-indigo-500 hover:scale-105 hover:shadow-lg"
         >
           Sign Up
         </a>
         <a
           href="/login"
-          className="bg-indigo-300 text-black px-8 py-4 rounded-lg font-bold text-xl border-2 border-indigo-300 transition-transform duration-300 transform hover:bg-indigo-500 hover:scale-105 hover:shadow-lg"
+          className="bg-[#8789FE] text-black px-8 py-4 rounded-lg font-bold text-xl border-2 border-indigo-300 transition-transform duration-300 transform hover:bg-indigo-500 hover:scale-105 hover:shadow-lg"
         >
           Login
         </a>
       </div>
 
-      <div className="text-left text-gray-400 mb-16 w-full max-w-4xl px-6">
+      <div className="text-left mb-16 w-full max-w-4xl px-6">
         <h2 className="text-3xl mb-4">Welcome to the Love Auditorium!</h2>
         <p className="text-lg mb-4">
           Welcome to College Cupid, where the only thing sharper than your GPA is your wit, and your
