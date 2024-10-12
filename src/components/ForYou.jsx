@@ -1,84 +1,154 @@
-import React, { useState } from "react";
-import RejectMessage from "./RejectMessage.jsx";
-import { useNavigate } from "react-router-dom";
-import Header from "./Header.jsx";
+import React, { useState, useEffect } from 'react';
+import PocketBase from 'pocketbase';
+import RejectMessage from './RejectMessage';
+import { useNavigate } from 'react-router-dom';
+import Header from './Header';
 
-function Body() {
+const pb = new PocketBase('https://collegecupid.pockethost.io');
+
+const ForYou = () => {
   const [message, setMessage] = useState(true);
+  const [matchedPerson, setMatchedPerson] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   const navigate = useNavigate();
 
-  function acceptMessage() {
-    navigate("/foryou/accepted");
-  }
+  // Validate token and log out if invalid
+  const validateToken = async () => {
+    const token = sessionStorage.getItem('token');
+    try {
+      if (!token) {
+        handleLogout();
+        return;
+      }
 
-  function rejectMessage() {
+      const userData = pb.authStore.model;
+      if (!userData || !userData.id) {
+        handleLogout();
+      } else {
+        setLoggedInUser(userData);
+      }
+    } catch (error) {
+      console.error('Token validation failed:', error);
+      handleLogout();
+    }
+  };
+
+  // Logout function
+  const handleLogout = () => {
+    pb.authStore.clear();
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('userId');
+    sessionStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  // Fetch match data for the logged-in user
+  const fetchMatch = async () => {
+    try {
+      const userId = sessionStorage.getItem('userId');
+      if (!userId) {
+        handleLogout();
+        return;
+      }
+
+      const matchRecord = await pb.collection('matches').getOne(userId, {
+        expand: 'matchedUser',
+      });
+
+      if (matchRecord) {
+        setMatchedPerson(matchRecord.expand.matchedUser);
+      } else {
+        setMatchedPerson(null);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching match:', error);
+      setMatchedPerson(null);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    validateToken().then(fetchMatch);
+  }, []);
+
+  const acceptMessage = () => {
+    navigate('/foryou/accepted');
+  };
+
+  const rejectMessage = () => {
     setMessage(false);
-  }
+  };
 
   return (
     <>
       <Header />
-      <div className="p-[6.95rem]">
-        <div className="flex">
-          <div className="block w-full max-w-md mx-auto bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-            <img
-              className="rounded-t-lg"
-              src="https://tecdn.b-cdn.net/img/new/standard/nature/184.jpg"
-              alt="image"
-            />
-            <div className="p-6 text-surface">
-              <h5 className="mb-2 text-xl font-medium leading-tight text-center">
-                Person1
+      <div className="py-16 px-4 sm:px-6 lg:px-8 min-h-screen flex flex-col justify-center items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-7xl">
+          {/* Logged-in user's profile */}
+          <div className="w-full bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+            <div className="w-full h-[300px]"> {/* Square box size */}
+              <img
+                className="w-full h-full object-cover"
+                src="https://tecdn.b-cdn.net/img/new/standard/nature/184.jpg"
+                alt="Profile Image"
+              />
+            </div>
+            <div className="p-6">
+              <h5 className="mb-2 text-xl font-medium text-center">
+                {loggedInUser ? loggedInUser.first_name : 'Loading...'}
               </h5>
               <p className="mb-4 text-base text-center">
-                Some quick example text to build on the card title and make up
-                the bulk of the card's content. (Profile Description)
+                Some quick example text to build on the card title and make up the bulk of the card's content. (Profile Description)
               </p>
               <div className="flex justify-center">
                 <a href="/profile">
-                <button
-                  type="button"
-                  className="inline-block rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong justify-center bg-gray-600"
-                  data-twe-ripple-init
-                  data-twe-ripple-color="light"
-                >
-                  Edit
-                </button>
+                  <button
+                    type="button"
+                    className="inline-block rounded bg-gray-600 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out hover:bg-gray-500"
+                  >
+                    Edit
+                  </button>
                 </a>
               </div>
             </div>
           </div>
-          {message ? (
-            <div className="block w-full max-w-md mx-auto bg-gray-800 shadow-lg rounded-lg overflow-hidden">
-              <img
-                className="rounded-t-lg"
-                src="https://tecdn.b-cdn.net/img/new/standard/nature/184.jpg"
-                alt="image"
-              />
-              <div className="p-6 text-surface">
-                <h5 className="mb-2 text-xl font-medium leading-tight text-center">
-                  Your Potential Mate
+
+          {/* Matched person's profile or message */}
+          {loading ? (
+            <div className="flex justify-center items-center w-full bg-gray-800 shadow-lg rounded-lg h-[300px]">
+              <p>Loading...</p>
+            </div>
+          ) : matchedPerson ? (
+            <div className="w-full bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+              <div className="w-full h-[300px]"> {/* Square box size */}
+                <img
+                  className="w-full h-full object-cover"
+                  src={matchedPerson.profile_picture || 'https://tecdn.b-cdn.net/img/new/standard/nature/184.jpg'}
+                  alt="Matched Profile"
+                />
+              </div>
+              <div className="p-6">
+                <h5 className="mb-2 text-xl font-medium text-center">
+                  {`${matchedPerson.first_name} ${matchedPerson.last_name}`}
                 </h5>
                 <p className="mb-4 text-base text-center">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content. Profile Description
+                  {matchedPerson.description || 'Profile Description'}
                 </p>
                 <div className="flex justify-center gap-10">
                   <button
                     type="button"
-                    className="inline-block rounded bg-emerald-600 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong justify-center"
-                    data-twe-ripple-init
-                    data-twe-ripple-color="light"
+                    className="inline-block rounded bg-emerald-600 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out hover:bg-emerald-500"
                     onClick={acceptMessage}
                   >
                     Accept
                   </button>
                   <button
                     type="button"
-                    className="inline-block rounded bg-red-600 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong justify-center"
-                    data-twe-ripple-init
-                    data-twe-ripple-color="light"
+                    className="inline-block rounded bg-red-600 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out hover:bg-red-500"
                     onClick={rejectMessage}
                   >
                     Reject
@@ -87,12 +157,21 @@ function Body() {
               </div>
             </div>
           ) : (
-            <RejectMessage />
+            <div className="w-full bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+              <div className="p-6">
+                <h5 className="mb-2 text-xl font-medium text-center">
+                  Your match is on its way!
+                </h5>
+                <p className="mb-4 text-base text-center">
+                  Keep checking back for your perfect match.
+                </p>
+              </div>
+            </div>
           )}
         </div>
       </div>
     </>
   );
-}
+};
 
-export default Body;
+export default ForYou;

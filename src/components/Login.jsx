@@ -27,6 +27,7 @@ const Login = () => {
       localStorage.setItem('userEmail', authData.record.email);
       sessionStorage.setItem('userId', authData.record.id);
       sessionStorage.setItem('token', pb.authStore.token);
+      sessionStorage.setItem('userName', pb.authStore.model.first_name);
     } catch (error) {
       alert('Login failed: Invalid email or password. Please try again.');
     } finally {
