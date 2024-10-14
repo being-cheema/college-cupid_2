@@ -13,7 +13,7 @@ const CollegeCupid = () => {
           Sign Up
         </a>
         <a
-          href="/login"
+          href="/Login"
           className="bg-[#8789FE] text-black px-8 py-4 rounded-lg font-bold text-xl border-2 border-indigo-300 transition-transform duration-300 transform hover:bg-indigo-500 hover:scale-105 hover:shadow-lg"
         >
           Login
