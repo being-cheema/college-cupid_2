@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PocketBase from 'pocketbase';
-import RejectMessage from './RejectMessage';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 
 const pb = new PocketBase('https://collegecupid.pockethost.io');
 
 const ForYou = () => {
-  const [message, setMessage] = useState(true);
   const [matchedPerson, setMatchedPerson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -44,7 +42,7 @@ const ForYou = () => {
     navigate('/login');
   };
 
-  // Fetch match data for the logged-in user
+  // Fetch match data for the logged-in user using getList
   const fetchMatch = async () => {
     try {
       const userId = sessionStorage.getItem('userId');
@@ -53,12 +51,17 @@ const ForYou = () => {
         return;
       }
 
-      const matchRecord = await pb.collection('matches').getOne(userId, {
-        expand: 'matchedUser',
+      // Fetch matches where the logged-in user is either 'user' or 'matched_user'
+      const resultList = await pb.collection('matches').getList(1, 50, {
+        filter: `user="${userId}" || matched_user="${userId}"`,
+        expand: 'user,matched_user', // Expand both user and matched user data
       });
 
-      if (matchRecord) {
-        setMatchedPerson(matchRecord.expand.matchedUser);
+      if (resultList && resultList.items.length > 0) {
+        const match = resultList.items[0]; // Get the first match found
+        // Determine who the matched person is (the other user in the match)
+        const matchedUser = match.expand.user.id === userId ? match.expand.matched_user : match.expand.user;
+        setMatchedPerson(matchedUser); // Store the matched person's info
       } else {
         setMatchedPerson(null);
       }
@@ -80,7 +83,7 @@ const ForYou = () => {
   };
 
   const rejectMessage = () => {
-    setMessage(false);
+    setMatchedPerson(null);
   };
 
   return (
